@@ -1,0 +1,608 @@
+:root {
+  --bg: #0d2b30;
+  --ink: #f6ecd6;
+  --saffron: #ffc24b;
+  --coral: #ff6b4a;
+  --panel: #143a40;
+  --line: #2b5a61;
+  --muted: #9fc0c2;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+  background: var(--bg);
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font: 500 16px/1.5 'DM Sans', system-ui, sans-serif;
+  background: radial-gradient(ellipse 80% 50% at 50% 0, #1f5963 0, transparent 70%), var(--bg);
+  padding: 1.5rem 1rem 3rem;
+  overflow-x: hidden;
+}
+
+header {
+  text-align: center;
+  padding-top: 0.5rem;
+}
+
+h1 {
+  margin: 0;
+  font: 400 clamp(3.2rem, 14vw, 6.6rem)/0.92 'Abril Fatface', Georgia, serif;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  text-shadow: 3px 3px 0 var(--coral), 6px 6px 0 #b8402a, 9px 9px 0 rgba(0, 0, 0, 0.35);
+}
+
+.tag {
+  margin: 1.6rem 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* Stage & Wheel */
+.stage {
+  position: relative;
+  width: min(88vw, 460px);
+  aspect-ratio: 1;
+  margin: 2.4rem auto 1.2rem;
+}
+
+.rim {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 20deg, #f5d27a, #b9780f, #ffe9a8, #b9780f, #f5d27a, #b9780f, #ffe9a8, #b9780f, #f5d27a);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55), 0 0 0 3px rgba(0, 0, 0, 0.25);
+}
+
+.bulb {
+  position: absolute;
+  width: 3%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff6c9;
+  box-shadow: 0 0 8px 2px rgba(255, 214, 102, 0.9);
+  animation: blink 1s infinite alternate;
+}
+
+.bulb:nth-child(even) {
+  animation-delay: 0.5s;
+}
+
+.spinning .bulb {
+  animation-duration: 0.18s;
+}
+
+@keyframes blink {
+  from { opacity: 1; }
+  to { opacity: 0.3; }
+}
+
+.disc {
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.disc::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.3), transparent 45%), radial-gradient(circle, transparent 62%, rgba(0, 0, 0, 0.3));
+}
+
+#wheel {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform 5.2s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  will-change: transform;
+}
+
+.hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 17%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  z-index: 2;
+  background: radial-gradient(circle at 35% 30%, #fff3c4, #e0a02a 55%, #8a5a0c);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), inset 0 0 0 3px rgba(255, 255, 255, 0.35);
+  display: grid;
+  place-items: center;
+}
+
+.hub-icon {
+  width: 52%;
+  height: 52%;
+  display: block;
+  filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.4));
+}
+
+.pointer {
+  position: absolute;
+  left: 50%;
+  top: -4.5%;
+  width: 10%;
+  transform: translateX(-50%);
+  z-index: 3;
+  transform-origin: 50% 25%;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.5));
+}
+
+.spinning .pointer {
+  animation: flick 0.16s infinite alternate ease-in-out;
+}
+
+@keyframes flick {
+  from { transform: translateX(-50%) rotate(-9deg); }
+  to { transform: translateX(-50%) rotate(7deg); }
+}
+
+/* Spin Button */
+.spin {
+  display: block;
+  margin: 1.4rem auto 1.8rem;
+  padding: 1rem 2.8rem;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font: 700 1.15rem 'DM Sans', sans-serif;
+  color: #2a1a00;
+  background: linear-gradient(180deg, #ffd36e, #ffb02e);
+  box-shadow: 0 6px 0 #b9780f, 0 14px 24px rgba(0, 0, 0, 0.4);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.spin:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #b9780f, 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.spin:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+/* Layout Cards */
+main {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 1.2rem 1.3rem;
+  margin-top: 1.6rem;
+}
+
+.card h3 {
+  margin: 0 0 0.8rem;
+  font: 400 1.5rem/1.1 'Abril Fatface', Georgia, serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.link {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font: 500 0.85rem 'DM Sans', sans-serif;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.2rem;
+}
+
+#hist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+#hist li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+#hist li:last-child {
+  border: 0;
+}
+
+.dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  flex: none;
+}
+
+.val {
+  font-weight: 700;
+  flex: 1;
+}
+
+#hist time {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+.empty {
+  color: var(--muted);
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr 2rem;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0.7rem 0;
+}
+
+.track {
+  height: 0.8rem;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  width: 0;
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.num {
+  font-weight: 700;
+  text-align: right;
+}
+
+.row.dim {
+  color: var(--muted);
+}
+
+#fx {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1100;
+}
+
+/* Result Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.modal-overlay.closing {
+  opacity: 0;
+  visibility: visible;
+  pointer-events: none;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 18, 22, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  background: linear-gradient(165deg, #17434a 0%, #0e2b30 65%, #091e22 100%);
+  border-radius: 28px;
+  padding: 2.2rem 1.8rem 1.8rem;
+  text-align: center;
+  color: var(--ink);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: scale(0.82) translateY(24px);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16, 1.25, 0.3, 1), opacity 0.3s ease;
+  max-height: min(90vh, 620px);
+  overflow-y: auto;
+}
+
+.modal-overlay.open .modal-card {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.modal-overlay.closing .modal-card {
+  transform: scale(0.85) translateY(18px);
+  opacity: 0;
+  transition: transform 0.24s ease-in, opacity 0.2s ease-in;
+}
+
+.modal-overlay.is-win .modal-card {
+  border: 1px solid rgba(255, 194, 75, 0.4);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(255, 194, 75, 0.2), 0 0 0 1px rgba(255, 194, 75, 0.3);
+}
+
+.modal-overlay.is-lose .modal-card {
+  border: 1px solid rgba(255, 107, 74, 0.35);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 45px rgba(255, 107, 74, 0.15), 0 0 0 1px rgba(255, 107, 74, 0.25);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--ink);
+  transform: rotate(90deg);
+}
+
+.modal-badge {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 1.1rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.modal-overlay.open .modal-badge {
+  animation: badgePop 0.5s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.modal-overlay.is-win .modal-badge {
+  background: radial-gradient(circle at 35% 30%, #ffe39b, #e0a02a 60%, #9e670c);
+  color: #2a1600;
+  box-shadow: 0 0 30px rgba(255, 194, 75, 0.65), inset 0 2px 4px rgba(255, 255, 255, 0.6), 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.modal-overlay.is-lose .modal-badge {
+  background: radial-gradient(circle at 35% 30%, #ff9982, #e55338 60%, #9e2b16);
+  color: #fff;
+  box-shadow: 0 0 26px rgba(255, 107, 74, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.modal-tag {
+  display: inline-block;
+  padding: 0.32rem 0.95rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.75rem;
+}
+
+.modal-overlay.is-win .modal-tag {
+  background: rgba(255, 194, 75, 0.15);
+  color: var(--saffron);
+  border: 1px solid rgba(255, 194, 75, 0.35);
+}
+
+.modal-overlay.is-lose .modal-tag {
+  background: rgba(255, 107, 74, 0.15);
+  color: #ff9e88;
+  border: 1px solid rgba(255, 107, 74, 0.35);
+}
+
+.modal-title {
+  margin: 0 0 0.4rem;
+  font: 400 clamp(1.85rem, 6vw, 2.4rem)/1.1 'Abril Fatface', Georgia, serif;
+  color: var(--ink);
+}
+
+.modal-overlay.is-win .modal-title {
+  color: var(--saffron);
+  text-shadow: 0 2px 14px rgba(255, 194, 75, 0.3);
+}
+
+.modal-sub {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+  letter-spacing: 0.02em;
+}
+
+.modal-overlay.is-win .modal-sub {
+  color: #fff2d4;
+}
+
+.modal-overlay.is-lose .modal-sub {
+  color: #ffb3a1;
+}
+
+.modal-desc {
+  margin: 0 auto;
+  max-width: 34ch;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.modal-voucher {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1.5px dashed rgba(255, 194, 75, 0.45);
+  border-radius: 16px;
+  padding: 0.85rem 1.1rem;
+  margin: 1.25rem 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  text-align: left;
+}
+
+.voucher-swatch {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 12px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.voucher-swatch svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.2;
+}
+
+.voucher-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.voucher-label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.voucher-title {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.voucher-badge {
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 194, 75, 0.2);
+  color: var(--saffron);
+  border: 1px solid rgba(255, 194, 75, 0.4);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex: none;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.4rem;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 0.9rem 1.4rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font: 700 1rem 'DM Sans', sans-serif;
+  transition: all 0.15s ease;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-btn.primary {
+  color: #2a1a00;
+  background: linear-gradient(180deg, #ffd36e, #ffb02e);
+  border: 0;
+  box-shadow: 0 4px 0 #b9780f, 0 10px 20px rgba(0, 0, 0, 0.35);
+}
+
+.modal-btn.primary:hover {
+  filter: brightness(1.06);
+}
+
+.modal-btn.primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #b9780f, 0 4px 8px rgba(0, 0, 0, 0.35);
+}
+
+.modal-btn.secondary {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  flex: 0 0 auto;
+  min-width: 96px;
+}
+
+.modal-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bulb,
+  .spinning .pointer,
+  .modal-overlay,
+  .modal-card,
+  .modal-badge {
+    animation: none !important;
+    transition: none !important;
+  }
+}
