@@ -33,23 +33,17 @@ background:radial-gradient(circle at 30% 22%,rgba(255,255,255,.3),transparent 45
 #wheel{display:block;width:100%;height:100%;transition:transform 5.2s cubic-bezier(.17,.67,.12,.99);will-change:transform}
 .hub{position:absolute;left:50%;top:50%;width:17%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;z-index:2;
 background:radial-gradient(circle at 35% 30%,#fff3c4,#e0a02a 55%,#8a5a0c);box-shadow:0 4px 14px rgba(0,0,0,.55),inset 0 0 0 3px rgba(255,255,255,.35);
-display:grid;place-items:center;font-size:clamp(1rem,5vw,1.7rem)}
+display:grid;place-items:center}
+.hub-icon{width:52%;height:52%;display:block;filter:drop-shadow(0 1px 1px rgba(255,255,255,.4))}
 .pointer{position:absolute;left:50%;top:-4.5%;width:10%;transform:translateX(-50%);z-index:3;transform-origin:50% 25%;filter:drop-shadow(0 4px 4px rgba(0,0,0,.5))}
 .spinning .pointer{animation:flick .16s infinite alternate ease-in-out}
 @keyframes flick{from{transform:translateX(-50%) rotate(-9deg)}to{transform:translateX(-50%) rotate(7deg)}}
-.spin{display:block;margin:1.4rem auto 0;padding:1rem 2.8rem;border:0;border-radius:999px;cursor:pointer;
+.spin{display:block;margin:1.4rem auto 1.8rem;padding:1rem 2.8rem;border:0;border-radius:999px;cursor:pointer;
 font:700 1.15rem 'DM Sans',sans-serif;color:#2a1a00;background:linear-gradient(180deg,#ffd36e,#ffb02e);
 box-shadow:0 6px 0 #b9780f,0 14px 24px rgba(0,0,0,.4);transition:transform .08s,box-shadow .08s}
 .spin:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #b9780f,0 6px 12px rgba(0,0,0,.4)}
 .spin:disabled{opacity:.65;cursor:wait}
 button:focus-visible{outline:3px solid #fff;outline-offset:3px}
-.result{max-width:460px;min-height:7rem;margin:1.6rem auto 0;text-align:center}
-.result h2{margin:0;font:400 clamp(1.7rem,7vw,2.3rem)/1.1 'Abril Fatface',Georgia,serif}
-.result p{margin:.5rem auto 0;max-width:36ch;color:var(--muted)}
-.result.win h2{color:var(--saffron)}
-.result.lose h2{color:#ff9a84}
-.result.pop>*{animation:pop .5s cubic-bezier(.2,1.5,.4,1)}
-@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 main{max-width:520px;margin:0 auto}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:1.2rem 1.3rem;margin-top:1.6rem}
 .card h3{margin:0 0 .8rem;font:400 1.5rem/1.1 'Abril Fatface',Georgia,serif;display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
@@ -66,8 +60,168 @@ main{max-width:520px;margin:0 auto}
 .fill{height:100%;width:0;border-radius:99px;transition:width .6s cubic-bezier(.2,.9,.3,1)}
 .num{font-weight:700;text-align:right}
 .row.dim{color:var(--muted)}
-#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
-@media (prefers-reduced-motion:reduce){.bulb,.spinning .pointer,.result.pop>*{animation:none}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:1100}
+
+/* Result Modal */
+.modal-overlay{
+ position:fixed;inset:0;z-index:1000;
+ display:flex;align-items:center;justify-content:center;
+ padding:1.2rem;
+ opacity:0;visibility:hidden;pointer-events:none;
+ transition:opacity .25s ease,visibility .25s ease;
+}
+.modal-overlay.open{
+ opacity:1;visibility:visible;pointer-events:auto;
+}
+.modal-overlay.closing{
+ opacity:0;visibility:visible;pointer-events:none;
+}
+.modal-backdrop{
+ position:absolute;inset:0;
+ background:rgba(5,18,22,.78);
+ backdrop-filter:blur(10px);
+ -webkit-backdrop-filter:blur(10px);
+}
+.modal-card{
+ position:relative;width:100%;max-width:430px;
+ background:linear-gradient(165deg,#17434a 0%,#0e2b30 65%,#091e22 100%);
+ border-radius:28px;
+ padding:2.2rem 1.8rem 1.8rem;
+ text-align:center;
+ color:var(--ink);
+ box-shadow:0 30px 80px rgba(0,0,0,.75),0 0 0 1px rgba(255,255,255,.1);
+ transform:scale(.82) translateY(24px);
+ opacity:0;
+ transition:transform .4s cubic-bezier(.16,1.25,.3,1),opacity .3s ease;
+ max-height:min(90vh,620px);
+ overflow-y:auto;
+}
+.modal-overlay.open .modal-card{
+ transform:scale(1) translateY(0);
+ opacity:1;
+}
+.modal-overlay.closing .modal-card{
+ transform:scale(.85) translateY(18px);
+ opacity:0;
+ transition:transform .24s ease-in,opacity .2s ease-in;
+}
+.modal-overlay.is-win .modal-card{
+ border:1px solid rgba(255,194,75,.4);
+ box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 50px rgba(255,194,75,.2),0 0 0 1px rgba(255,194,75,.3);
+}
+.modal-overlay.is-lose .modal-card{
+ border:1px solid rgba(255,107,74,.35);
+ box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 45px rgba(255,107,74,.15),0 0 0 1px rgba(255,107,74,.25);
+}
+.modal-close{
+ position:absolute;top:1rem;right:1rem;width:38px;height:38px;
+ background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
+ border-radius:50%;color:var(--muted);
+ display:grid;place-items:center;cursor:pointer;
+ transition:all .2s ease;
+}
+.modal-close:hover{
+ background:rgba(255,255,255,.2);color:var(--ink);
+ transform:rotate(90deg);
+}
+.modal-badge{
+ width:76px;height:76px;margin:0 auto 1.1rem;
+ border-radius:50%;display:grid;place-items:center;
+ position:relative;
+}
+.modal-overlay.open .modal-badge{
+ animation:badgePop .5s .1s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes badgePop{
+ 0%{transform:scale(.3) rotate(-15deg);opacity:0}
+ 100%{transform:scale(1) rotate(0);opacity:1}
+}
+.modal-overlay.is-win .modal-badge{
+ background:radial-gradient(circle at 35% 30%,#ffe39b,#e0a02a 60%,#9e670c);
+ color:#2a1600;
+ box-shadow:0 0 30px rgba(255,194,75,.65),inset 0 2px 4px rgba(255,255,255,.6),0 6px 16px rgba(0,0,0,.4);
+}
+.modal-overlay.is-lose .modal-badge{
+ background:radial-gradient(circle at 35% 30%,#ff9982,#e55338 60%,#9e2b16);
+ color:#fff;
+ box-shadow:0 0 26px rgba(255,107,74,.5),inset 0 2px 4px rgba(255,255,255,.4),0 6px 16px rgba(0,0,0,.4);
+}
+.modal-tag{
+ display:inline-block;padding:.32rem .95rem;border-radius:999px;
+ font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+ margin-bottom:.75rem;
+}
+.modal-overlay.is-win .modal-tag{
+ background:rgba(255,194,75,.15);color:var(--saffron);border:1px solid rgba(255,194,75,.35);
+}
+.modal-overlay.is-lose .modal-tag{
+ background:rgba(255,107,74,.15);color:#ff9e88;border:1px solid rgba(255,107,74,.35);
+}
+.modal-title{
+ margin:0 0 .4rem;
+ font:400 clamp(1.85rem,6vw,2.4rem)/1.1 'Abril Fatface',Georgia,serif;
+ color:var(--ink);
+}
+.modal-overlay.is-win .modal-title{
+ color:var(--saffron);
+ text-shadow:0 2px 14px rgba(255,194,75,.3);
+}
+.modal-sub{
+ font-size:1rem;font-weight:700;margin:0 0 .6rem;letter-spacing:.02em;
+}
+.modal-overlay.is-win .modal-sub{color:#fff2d4}
+.modal-overlay.is-lose .modal-sub{color:#ffb3a1}
+.modal-desc{
+ margin:0 auto;max-width:34ch;color:var(--muted);font-size:.95rem;line-height:1.55;
+}
+.modal-voucher{
+ background:rgba(0,0,0,.35);
+ border:1.5px dashed rgba(255,194,75,.45);
+ border-radius:16px;
+ padding:.85rem 1.1rem;
+ margin:1.25rem 0 .5rem;
+ display:flex;align-items:center;gap:.85rem;text-align:left;
+}
+.voucher-swatch{
+ width:2.4rem;height:2.4rem;border-radius:12px;flex:none;
+ display:grid;place-items:center;
+ box-shadow:0 4px 10px rgba(0,0,0,.35);
+}
+.voucher-swatch svg{width:18px;height:18px;stroke-width:2.2}
+.voucher-info{flex:1;min-width:0}
+.voucher-label{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.voucher-title{display:block;font-size:1.05rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.voucher-badge{
+ padding:.22rem .65rem;border-radius:999px;font-size:.75rem;font-weight:700;
+ background:rgba(255,194,75,.2);color:var(--saffron);border:1px solid rgba(255,194,75,.4);
+ letter-spacing:.06em;text-transform:uppercase;flex:none;
+}
+.modal-actions{
+ display:flex;gap:.75rem;margin-top:1.4rem;
+}
+.modal-btn{
+ flex:1;padding:.9rem 1.4rem;border-radius:999px;cursor:pointer;
+ font:700 1rem 'DM Sans',sans-serif;transition:all .15s ease;
+ min-height:48px;display:inline-flex;align-items:center;justify-content:center;
+}
+.modal-btn.primary{
+ color:#2a1a00;
+ background:linear-gradient(180deg,#ffd36e,#ffb02e);
+ border:0;
+ box-shadow:0 4px 0 #b9780f,0 10px 20px rgba(0,0,0,.35);
+}
+.modal-btn.primary:hover{filter:brightness(1.06)}
+.modal-btn.primary:active{transform:translateY(3px);box-shadow:0 1px 0 #b9780f,0 4px 8px rgba(0,0,0,.35)}
+.modal-btn.secondary{
+ background:rgba(255,255,255,.07);
+ border:1px solid var(--line);
+ color:var(--ink);
+ flex:0 0 auto;min-width:96px;
+}
+.modal-btn.secondary:hover{
+ background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);
+}
+@media (prefers-reduced-motion:reduce){.bulb,.spinning .pointer,.modal-overlay,.modal-card,.modal-badge{animation:none !important;transition:none !important}}
 </style>
 </head>
 <body>
@@ -81,16 +235,19 @@ main{max-width:520px;margin:0 auto}
   <div class="stage" id="stage">
     <div class="rim" id="rim"></div>
     <div class="disc"><canvas id="wheel"></canvas></div>
-    <div class="hub">&#9749;</div>
+    <div class="hub" aria-hidden="true">
+      <svg class="hub-icon" viewBox="0 0 24 24" fill="none" stroke="#3d2204" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 8h1a4 4 0 0 1 0 8h-1"></path>
+        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+        <line x1="6" y1="2" x2="6" y2="4"></line>
+        <line x1="10" y1="2" x2="10" y2="4"></line>
+        <line x1="14" y1="2" x2="14" y2="4"></line>
+      </svg>
+    </div>
     <svg class="pointer" viewBox="0 0 40 52" aria-hidden="true"><path d="M20 50 L3 14 A18 18 0 1 1 37 14 Z" fill="#ff6b4a" stroke="#fff3d6" stroke-width="3"/><circle cx="20" cy="17" r="5" fill="#fff3d6"/></svg>
   </div>
 
   <button class="spin" id="spin">Spin the wheel</button>
-
-  <div class="result" id="result" aria-live="polite">
-    <h2>Ready when you are</h2>
-    <p>Three tasty prizes are waiting on this wheel. Give it a spin.</p>
-  </div>
 
   <section class="card">
     <h3>Spin history <button class="link" id="clear">Clear</button></h3>
@@ -103,21 +260,83 @@ main{max-width:520px;margin:0 auto}
   </section>
 </main>
 
+<div class="modal-overlay" id="result-modal" role="dialog" aria-modal="true" aria-labelledby="modal-headline" aria-hidden="true">
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal-card">
+    <button class="modal-close" id="modal-close" aria-label="Close dialog">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="modal-badge" id="modal-badge"></div>
+    <div class="modal-tag" id="modal-tag">Reward</div>
+    <h2 class="modal-title" id="modal-headline">Brosted Chicken</h2>
+    <div class="modal-sub" id="modal-sub">Crunch Time Winner</div>
+    <p class="modal-desc" id="modal-desc"></p>
+    <div class="modal-voucher" id="modal-voucher">
+      <div class="voucher-swatch" id="voucher-swatch"></div>
+      <div class="voucher-info">
+        <span class="voucher-label" id="voucher-label">Complimentary Reward</span>
+        <span class="voucher-title" id="voucher-title">Brosted Chicken</span>
+      </div>
+      <span class="voucher-badge">Free</span>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn primary" id="modal-primary-btn">Spin Again</button>
+      <button class="modal-btn secondary" id="modal-secondary-btn">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const ITEMS=[
- {n:'Blue lagoon',e:'🌊',c:'#19a7ce',t:'#fff',w:1,bar:'#19a7ce'},
- {n:'Not this time',e:'😅',c:'#f3e8d0',t:'#4a3b2a'},
- {n:'Brosted chicken',e:'🍗',c:'#f0902b',t:'#2a1500',w:1,bar:'#f0902b'},
- {n:'Not this time',e:'😅',c:'#e5d4b0',t:'#4a3b2a'},
- {n:'Pepsi',e:'🥤',c:'#1e46a8',t:'#fff',w:1,bar:'#4a7cf0'},
- {n:'Not this time',e:'😅',c:'#f3e8d0',t:'#4a3b2a'}
+ {n:'Blue lagoon',label:'Blue Lagoon',c:'#19a7ce',t:'#fff',w:1,bar:'#19a7ce'},
+ {n:'Not this time',label:'Not This Time',c:'#f3e8d0',t:'#4a3b2a'},
+ {n:'Brosted chicken',label:'Brosted Chicken',c:'#f0902b',t:'#2a1500',w:1,bar:'#f0902b'},
+ {n:'Not this time',label:'Not This Time',c:'#e5d4b0',t:'#4a3b2a'},
+ {n:'Pepsi',label:'Pepsi',c:'#1e46a8',t:'#fff',w:1,bar:'#4a7cf0'},
+ {n:'Not this time',label:'Not This Time',c:'#f3e8d0',t:'#4a3b2a'}
 ];
-const WIN={
- 'Blue lagoon':['Chill mode unlocked! 🌊','A Blue Lagoon is yours. Sip slowly and enjoy.'],
- 'Brosted chicken':['Crunch time! 🍗','Brosted Chicken is yours. Golden, crispy, all yours.'],
- 'Pepsi':['Fizz alert! 🥤','An ice-cold Pepsi is yours. Cheers!']
+
+const WIN_DATA={
+ 'Blue lagoon':{
+  title:'Blue Lagoon',
+  sub:'Chill Mode Unlocked',
+  desc:'A refreshing Blue Lagoon mocktail is all yours. Sip slowly and savor every drop.',
+  label:'Signature Mocktail',
+  color:'#19a7ce',
+  icon:`<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"/><path d="M12 15v7"/><path d="m19 3-7 8-7-8Z"/></svg>`
+ },
+ 'Brosted chicken':{
+  title:'Brosted Chicken',
+  sub:'Crunch Time Winner',
+  desc:'Brosted Chicken is yours! Golden, crispy, and freshly seasoned for you.',
+  label:'Crispy Delicacy',
+  color:'#f0902b',
+  icon:`<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M4 14a8 8 0 0 1 16 0"/><line x1="2" y1="18" x2="22" y2="18"/><line x1="12" y1="2" x2="12" y2="4"/></svg>`
+ },
+ 'Pepsi':{
+  title:'Ice-Cold Pepsi',
+  sub:'Pure Refreshment',
+  desc:'A chilled Pepsi is yours. Crack it open and enjoy the crisp fizz.',
+  label:'Chilled Beverage',
+  color:'#1e46a8',
+  icon:`<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="4"/><line x1="10" y1="7" x2="14" y2="7"/></svg>`
+ }
 };
-const LOSE=['So close! The wheel is warming up for you.','Plot twist loading. Spin again!','Every cafe legend starts with a warm-up spin. ☕'];
+
+const LOSE_MESSAGES=[
+ 'So close! Give the wheel another spin and taste your luck.',
+ 'Almost had it! Fortune favors another spin.',
+ 'Warm-up round complete. Your lucky spin is right around the corner.',
+ 'Not quite this time, but the cafe wheel never stays quiet for long.'
+];
+
+const WIN_BADGE_ICON=`<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2a1600" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`;
+
+const LOSE_BADGE_ICON=`<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>`;
+
 const $=id=>document.getElementById(id);
 const cv=$('wheel'),ctx=cv.getContext('2d'),SEG=360/ITEMS.length;
 let rot=0,busy=false,state={history:[],counts:{}};
@@ -138,10 +357,23 @@ function draw(){
   ctx.fillStyle=it.c;ctx.fill();ctx.strokeStyle='rgba(0,0,0,.28)';ctx.lineWidth=2;ctx.stroke();
   ctx.save();ctx.translate(r,r);ctx.rotate(a0+seg/2);
   ctx.fillStyle=it.t;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font=`700 ${s*.05}px 'DM Sans',sans-serif`;
-  const k=it.n.indexOf(' '),l1=it.n.slice(0,k),l2=it.n.slice(k+1);
-  ctx.fillText(l1,r*.56,-s*.03);ctx.fillText(l2,r*.56,s*.03);
-  ctx.font=`${s*.06}px serif`;ctx.fillText(it.e,r*.86,0);
+  ctx.font=`700 ${Math.round(s*.046)}px 'DM Sans',sans-serif`;
+  const label=it.label||it.n;
+  let lines=[];
+  if(label==='Pepsi'){
+   lines=['Pepsi'];
+  }else if(label==='Not This Time'){
+   lines=['Not This','Time'];
+  }else{
+   const k=label.indexOf(' ');
+   lines=k===-1?[label]:[label.slice(0,k),label.slice(k+1)];
+  }
+  if(lines.length===1){
+   ctx.fillText(lines[0],r*.62,0);
+  }else{
+   ctx.fillText(lines[0],r*.62,-s*.026);
+   ctx.fillText(lines[1],r*.62,s*.026);
+  }
   ctx.restore();
   ctx.beginPath();ctx.arc(r+r*.965*Math.cos(a0),r+r*.965*Math.sin(a0),s*.012,0,7);ctx.fillStyle='#ffe9a8';ctx.fill();
  });
@@ -164,29 +396,81 @@ function finish(i){
  state.history.unshift({n:it.n,t:Date.now(),w:!!it.w});
  state.history=state.history.slice(0,100);
  state.counts[it.n]=(state.counts[it.n]||0)+1;save();
- const res=$('result');res.className='result pop '+(it.w?'win':'lose');
- if(it.w){res.innerHTML=`<h2>${WIN[it.n][0]}</h2><p>${WIN[it.n][1]}</p>`;confetti()}
- else{const st=streakLosses();
-  res.innerHTML=`<h2>Better Luck Next Time</h2><p>${st>=3?'Three misses in a row means the next spin is hungry for you. 🔥':LOSE[Math.floor(Math.random()*LOSE.length)]}</p>`}
  $('stage').classList.remove('spinning');
  $('spin').disabled=false;$('spin').textContent=it.w?'Spin again':'Try again';busy=false;render();
+ showModalResult(it);
+}
+
+function showModalResult(it){
+ const modal=$('result-modal'),badge=$('modal-badge'),tag=$('modal-tag');
+ const title=$('modal-headline'),sub=$('modal-sub'),desc=$('modal-desc');
+ const voucher=$('modal-voucher'),swatch=$('voucher-swatch');
+ const vLabel=$('voucher-label'),vTitle=$('voucher-title');
+ const pBtn=$('modal-primary-btn');
+
+ modal.classList.remove('is-win','is-lose','closing');
+ if(it.w){
+  modal.classList.add('is-win');
+  badge.innerHTML=WIN_BADGE_ICON;
+  tag.textContent='Reward Unlocked';
+  const data=WIN_DATA[it.n]||{title:it.label||it.n,sub:'Winner',desc:'You won a prize!',label:'Cafe Reward',color:it.bar,icon:''};
+  title.textContent=data.title;
+  sub.textContent=data.sub;
+  desc.textContent=data.desc;
+  vLabel.textContent=data.label;
+  vTitle.textContent=data.title;
+  swatch.style.background=data.color;
+  swatch.innerHTML=data.icon;
+  voucher.style.display='flex';
+  pBtn.textContent='Spin Again';
+  confetti();
+ }else{
+  modal.classList.add('is-lose');
+  badge.innerHTML=LOSE_BADGE_ICON;
+  tag.textContent='Better Luck';
+  const st=streakLosses();
+  title.textContent='Better Luck Next Spin';
+  sub.textContent=st>=3?'Keep Going':'Warm-Up Spin';
+  desc.textContent=st>=3?'Three misses in a row means your luck is primed to turn on the next spin.':LOSE_MESSAGES[Math.floor(Math.random()*LOSE_MESSAGES.length)];
+  voucher.style.display='none';
+  pBtn.textContent='Try Again';
+ }
+
+ modal.classList.add('open');
+ modal.setAttribute('aria-hidden','false');
+ setTimeout(()=>pBtn.focus(),120);
+}
+
+function closeModal(andSpin=false){
+ const modal=$('result-modal');
+ if(!modal.classList.contains('open'))return;
+ modal.classList.add('closing');
+ modal.classList.remove('open');
+ setTimeout(()=>{
+  modal.classList.remove('closing');
+  modal.setAttribute('aria-hidden','true');
+  $('spin').focus();
+  if(andSpin){
+   spin();
+  }
+ },260);
 }
 
 function render(){
  const h=$('hist');
  h.innerHTML=state.history.length?'':'<p class="empty">No spins yet. Your first spin starts the story.</p>';
  state.history.forEach(e=>{
-  const it=ITEMS.find(x=>x.n===e.n),li=document.createElement('li');
+  const it=ITEMS.find(x=>x.n.toLowerCase()===e.n.toLowerCase())||ITEMS[0],li=document.createElement('li');
   li.innerHTML=`<span class="dot" style="background:${e.w?it.bar:'#8a8f8a'}"></span><span class="val"></span><time></time>`;
-  li.children[1].textContent=e.n;
+  li.children[1].textContent=it.label||e.n;
   li.children[2].textContent=new Date(e.t).toLocaleString([],{day:'numeric',month:'short',hour:'numeric',minute:'2-digit',second:'2-digit'});
   h.appendChild(li);
  });
- const rows=[...ITEMS.filter(x=>x.w),{n:'Not this time',bar:'#9a9a8a',dim:1}];
+ const rows=[...ITEMS.filter(x=>x.w),{n:'Not this time',label:'Not this time',bar:'#9a9a8a',dim:1}];
  const total=Object.values(state.counts).reduce((a,b)=>a+b,0),max=Math.max(1,...rows.map(r=>state.counts[r.n]||0));
  $('total').textContent=total+(total===1?' spin':' spins');
  $('tally').innerHTML=rows.map(r=>{const c=state.counts[r.n]||0;
-  return `<div class="row${r.dim?' dim':''}"><span>${r.n}</span><div class="track"><div class="fill" style="width:${c/max*100}%;background:${r.bar}"></div></div><span class="num">${c}</span></div>`}).join('');
+  return `<div class="row${r.dim?' dim':''}"><span>${r.label||r.n}</span><div class="track"><div class="fill" style="width:${c/max*100}%;background:${r.bar}"></div></div><span class="num">${c}</span></div>`}).join('');
 }
 
 function confetti(){
@@ -201,6 +485,15 @@ function confetti(){
 
 $('spin').addEventListener('click',spin);
 $('clear').addEventListener('click',()=>{state={history:[],counts:{}};save();render()});
+$('modal-close').addEventListener('click',()=>closeModal(false));
+$('modal-secondary-btn').addEventListener('click',()=>closeModal(false));
+$('modal-backdrop').addEventListener('click',()=>closeModal(false));
+$('modal-primary-btn').addEventListener('click',()=>closeModal(true));
+window.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&$('result-modal').classList.contains('open')){
+  closeModal(false);
+ }
+});
 addEventListener('resize',draw);
 draw();render();
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
