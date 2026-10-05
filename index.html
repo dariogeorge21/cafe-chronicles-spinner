@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cafe Chronicles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d2b30;--ink:#f6ecd6;--saffron:#ffc24b;--coral:#ff6b4a;--panel:#143a40;--line:#2b5a61;--muted:#9fc0c2;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100vh;color:var(--ink);font:500 16px/1.5 'DM Sans',system-ui,sans-serif;
+background:radial-gradient(ellipse 80% 50% at 50% 0,#1f5963 0,transparent 70%),var(--bg);padding:1.5rem 1rem 3rem;overflow-x:hidden}
+header{text-align:center;padding-top:.5rem}
+h1{margin:0;font:400 clamp(3.2rem,14vw,6.6rem)/.92 'Abril Fatface',Georgia,serif;letter-spacing:.01em;color:var(--ink);
+text-shadow:3px 3px 0 var(--coral),6px 6px 0 #b8402a,9px 9px 0 rgba(0,0,0,.35)}
+.tag{margin:1.6rem 0 0;color:var(--muted);font-size:1.05rem}
+.stage{position:relative;width:min(88vw,460px);aspect-ratio:1;margin:2.4rem auto 1.2rem}
+.rim{position:absolute;inset:0;border-radius:50%;
+background:conic-gradient(from 20deg,#f5d27a,#b9780f,#ffe9a8,#b9780f,#f5d27a,#b9780f,#ffe9a8,#b9780f,#f5d27a);
+box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 0 3px rgba(0,0,0,.25)}
+.bulb{position:absolute;width:3%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);
+background:#fff6c9;box-shadow:0 0 8px 2px rgba(255,214,102,.9);animation:blink 1s infinite alternate}
+.bulb:nth-child(even){animation-delay:.5s}
+.spinning .bulb{animation-duration:.18s}
+@keyframes blink{from{opacity:1}to{opacity:.3}}
+.disc{position:absolute;inset:6%;border-radius:50%;overflow:hidden;box-shadow:inset 0 0 0 4px rgba(0,0,0,.3)}
+.disc::after{content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;
+background:radial-gradient(circle at 30% 22%,rgba(255,255,255,.3),transparent 45%),radial-gradient(circle,transparent 62%,rgba(0,0,0,.3))}
+#wheel{display:block;width:100%;height:100%;transition:transform 5.2s cubic-bezier(.17,.67,.12,.99);will-change:transform}
+.hub{position:absolute;left:50%;top:50%;width:17%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;z-index:2;
+background:radial-gradient(circle at 35% 30%,#fff3c4,#e0a02a 55%,#8a5a0c);box-shadow:0 4px 14px rgba(0,0,0,.55),inset 0 0 0 3px rgba(255,255,255,.35);
+display:grid;place-items:center;font-size:clamp(1rem,5vw,1.7rem)}
+.pointer{position:absolute;left:50%;top:-4.5%;width:10%;transform:translateX(-50%);z-index:3;transform-origin:50% 25%;filter:drop-shadow(0 4px 4px rgba(0,0,0,.5))}
+.spinning .pointer{animation:flick .16s infinite alternate ease-in-out}
+@keyframes flick{from{transform:translateX(-50%) rotate(-9deg)}to{transform:translateX(-50%) rotate(7deg)}}
+.spin{display:block;margin:1.4rem auto 0;padding:1rem 2.8rem;border:0;border-radius:999px;cursor:pointer;
+font:700 1.15rem 'DM Sans',sans-serif;color:#2a1a00;background:linear-gradient(180deg,#ffd36e,#ffb02e);
+box-shadow:0 6px 0 #b9780f,0 14px 24px rgba(0,0,0,.4);transition:transform .08s,box-shadow .08s}
+.spin:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #b9780f,0 6px 12px rgba(0,0,0,.4)}
+.spin:disabled{opacity:.65;cursor:wait}
+button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.result{max-width:460px;min-height:7rem;margin:1.6rem auto 0;text-align:center}
+.result h2{margin:0;font:400 clamp(1.7rem,7vw,2.3rem)/1.1 'Abril Fatface',Georgia,serif}
+.result p{margin:.5rem auto 0;max-width:36ch;color:var(--muted)}
+.result.win h2{color:var(--saffron)}
+.result.lose h2{color:#ff9a84}
+.result.pop>*{animation:pop .5s cubic-bezier(.2,1.5,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+main{max-width:520px;margin:0 auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:1.2rem 1.3rem;margin-top:1.6rem}
+.card h3{margin:0 0 .8rem;font:400 1.5rem/1.1 'Abril Fatface',Georgia,serif;display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
+.link{background:none;border:0;color:var(--muted);font:500 .85rem 'DM Sans',sans-serif;text-decoration:underline;cursor:pointer;padding:.2rem}
+#hist{list-style:none;margin:0;padding:0;max-height:250px;overflow-y:auto}
+#hist li{display:flex;align-items:center;gap:.7rem;padding:.55rem 0;border-bottom:1px solid var(--line)}
+#hist li:last-child{border:0}
+.dot{width:.7rem;height:.7rem;border-radius:50%;flex:none}
+.val{font-weight:700;flex:1}
+#hist time{color:var(--muted);font-size:.85rem;text-align:right}
+.empty{color:var(--muted);margin:0}
+.row{display:grid;grid-template-columns:7.5rem 1fr 2rem;align-items:center;gap:.8rem;margin:.7rem 0}
+.track{height:.8rem;border-radius:99px;background:rgba(0,0,0,.28);overflow:hidden}
+.fill{height:100%;width:0;border-radius:99px;transition:width .6s cubic-bezier(.2,.9,.3,1)}
+.num{font-weight:700;text-align:right}
+.row.dim{color:var(--muted)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:9}
+@media (prefers-reduced-motion:reduce){.bulb,.spinning .pointer,.result.pop>*{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<header>
+  <h1>Cafe<br>Chronicles</h1>
+  <p class="tag">Spin the wheel and taste your luck.</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="rim" id="rim"></div>
+    <div class="disc"><canvas id="wheel"></canvas></div>
+    <div class="hub">&#9749;</div>
+    <svg class="pointer" viewBox="0 0 40 52" aria-hidden="true"><path d="M20 50 L3 14 A18 18 0 1 1 37 14 Z" fill="#ff6b4a" stroke="#fff3d6" stroke-width="3"/><circle cx="20" cy="17" r="5" fill="#fff3d6"/></svg>
+  </div>
+
+  <button class="spin" id="spin">Spin the wheel</button>
+
+  <div class="result" id="result" aria-live="polite">
+    <h2>Ready when you are</h2>
+    <p>Three tasty prizes are waiting on this wheel. Give it a spin.</p>
+  </div>
+
+  <section class="card">
+    <h3>Spin history <button class="link" id="clear">Clear</button></h3>
+    <ul id="hist"></ul>
+  </section>
+
+  <section class="card">
+    <h3>Prize tally <span id="total" style="font:500 .9rem 'DM Sans',sans-serif;color:var(--muted)"></span></h3>
+    <div id="tally"></div>
+  </section>
+</main>
+
+<script>
+const ITEMS=[
+ {n:'Blue lagoon',e:'🌊',c:'#19a7ce',t:'#fff',w:1,bar:'#19a7ce'},
+ {n:'Not this time',e:'😅',c:'#f3e8d0',t:'#4a3b2a'},
+ {n:'Brosted chicken',e:'🍗',c:'#f0902b',t:'#2a1500',w:1,bar:'#f0902b'},
+ {n:'Not this time',e:'😅',c:'#e5d4b0',t:'#4a3b2a'},
+ {n:'Pepsi',e:'🥤',c:'#1e46a8',t:'#fff',w:1,bar:'#4a7cf0'},
+ {n:'Not this time',e:'😅',c:'#f3e8d0',t:'#4a3b2a'}
+];
+const WIN={
+ 'Blue lagoon':['Chill mode unlocked! 🌊','A Blue Lagoon is yours. Sip slowly and enjoy.'],
+ 'Brosted chicken':['Crunch time! 🍗','Brosted Chicken is yours. Golden, crispy, all yours.'],
+ 'Pepsi':['Fizz alert! 🥤','An ice-cold Pepsi is yours. Cheers!']
+};
+const LOSE=['So close! The wheel is warming up for you.','Plot twist loading. Spin again!','Every cafe legend starts with a warm-up spin. ☕'];
+const $=id=>document.getElementById(id);
+const cv=$('wheel'),ctx=cv.getContext('2d'),SEG=360/ITEMS.length;
+let rot=0,busy=false,state={history:[],counts:{}};
+
+try{const s=JSON.parse(localStorage.getItem('cc_state')||'null');if(s&&s.history&&s.counts)state=s}catch(e){}
+const save=()=>{try{localStorage.setItem('cc_state',JSON.stringify(state))}catch(e){}};
+
+// rim bulbs
+for(let i=0;i<24;i++){const a=i/24*2*Math.PI,b=document.createElement('span');b.className='bulb';
+ b.style.left=(50+47*Math.sin(a))+'%';b.style.top=(50-47*Math.cos(a))+'%';$('rim').appendChild(b)}
+
+function draw(){
+ const s=cv.clientWidth,d=window.devicePixelRatio||1,r=s/2,seg=2*Math.PI/ITEMS.length;
+ cv.width=cv.height=s*d;ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,s,s);
+ ITEMS.forEach((it,i)=>{
+  const a0=-Math.PI/2+i*seg;
+  ctx.beginPath();ctx.moveTo(r,r);ctx.arc(r,r,r,a0,a0+seg);ctx.closePath();
+  ctx.fillStyle=it.c;ctx.fill();ctx.strokeStyle='rgba(0,0,0,.28)';ctx.lineWidth=2;ctx.stroke();
+  ctx.save();ctx.translate(r,r);ctx.rotate(a0+seg/2);
+  ctx.fillStyle=it.t;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=`700 ${s*.05}px 'DM Sans',sans-serif`;
+  const k=it.n.indexOf(' '),l1=it.n.slice(0,k),l2=it.n.slice(k+1);
+  ctx.fillText(l1,r*.56,-s*.03);ctx.fillText(l2,r*.56,s*.03);
+  ctx.font=`${s*.06}px serif`;ctx.fillText(it.e,r*.86,0);
+  ctx.restore();
+  ctx.beginPath();ctx.arc(r+r*.965*Math.cos(a0),r+r*.965*Math.sin(a0),s*.012,0,7);ctx.fillStyle='#ffe9a8';ctx.fill();
+ });
+}
+
+function spin(){
+ if(busy)return;busy=true;$('spin').disabled=true;$('spin').textContent='Spinning...';
+ $('stage').classList.add('spinning');
+ const i=Math.floor(Math.random()*ITEMS.length),jit=(Math.random()-.5)*SEG*.7;
+ const want=((-(i+.5)*SEG-jit)%360+360)%360,delta=((want-rot%360)+360)%360;
+ rot+=360*(5+Math.floor(Math.random()*3))+delta;
+ cv.style.transform=`rotate(${rot}deg)`;
+ setTimeout(()=>finish(i),5300);
+}
+
+function streakLosses(){let n=0;for(const h of state.history){if(h.w)break;n++}return n}
+
+function finish(i){
+ const it=ITEMS[i];
+ state.history.unshift({n:it.n,t:Date.now(),w:!!it.w});
+ state.history=state.history.slice(0,100);
+ state.counts[it.n]=(state.counts[it.n]||0)+1;save();
+ const res=$('result');res.className='result pop '+(it.w?'win':'lose');
+ if(it.w){res.innerHTML=`<h2>${WIN[it.n][0]}</h2><p>${WIN[it.n][1]}</p>`;confetti()}
+ else{const st=streakLosses();
+  res.innerHTML=`<h2>Better Luck Next Time</h2><p>${st>=3?'Three misses in a row means the next spin is hungry for you. 🔥':LOSE[Math.floor(Math.random()*LOSE.length)]}</p>`}
+ $('stage').classList.remove('spinning');
+ $('spin').disabled=false;$('spin').textContent=it.w?'Spin again':'Try again';busy=false;render();
+}
+
+function render(){
+ const h=$('hist');
+ h.innerHTML=state.history.length?'':'<p class="empty">No spins yet. Your first spin starts the story.</p>';
+ state.history.forEach(e=>{
+  const it=ITEMS.find(x=>x.n===e.n),li=document.createElement('li');
+  li.innerHTML=`<span class="dot" style="background:${e.w?it.bar:'#8a8f8a'}"></span><span class="val"></span><time></time>`;
+  li.children[1].textContent=e.n;
+  li.children[2].textContent=new Date(e.t).toLocaleString([],{day:'numeric',month:'short',hour:'numeric',minute:'2-digit',second:'2-digit'});
+  h.appendChild(li);
+ });
+ const rows=[...ITEMS.filter(x=>x.w),{n:'Not this time',bar:'#9a9a8a',dim:1}];
+ const total=Object.values(state.counts).reduce((a,b)=>a+b,0),max=Math.max(1,...rows.map(r=>state.counts[r.n]||0));
+ $('total').textContent=total+(total===1?' spin':' spins');
+ $('tally').innerHTML=rows.map(r=>{const c=state.counts[r.n]||0;
+  return `<div class="row${r.dim?' dim':''}"><span>${r.n}</span><div class="track"><div class="fill" style="width:${c/max*100}%;background:${r.bar}"></div></div><span class="num">${c}</span></div>`}).join('');
+}
+
+function confetti(){
+ if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ const c=$('fx'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+ const cols=['#ffc24b','#ff6b4a','#19a7ce','#f6ecd6','#4a7cf0'];
+ const P=Array.from({length:120},()=>({x:innerWidth/2,y:innerHeight*.4,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,s:Math.random()*8+4,c:cols[Math.random()*5|0],r:Math.random()*6,vr:(Math.random()-.5)*.4}));
+ let f=0;(function t(){x.clearRect(0,0,c.width,c.height);
+  P.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
+  if(++f<130)requestAnimationFrame(t);else x.clearRect(0,0,c.width,c.height)})();
+}
+
+$('spin').addEventListener('click',spin);
+$('clear').addEventListener('click',()=>{state={history:[],counts:{}};save();render()});
+addEventListener('resize',draw);
+draw();render();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
+</script>
+</body>
+</html>
