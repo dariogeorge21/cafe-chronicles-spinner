@@ -4,8 +4,8 @@
 
 const ITEMS = [
   {
-    n: 'Blue lagoon',
-    label: 'Blue Lagoon',
+    n: 'Virgin Mojito',
+    label: 'Virgin Mojito',
     c: '#0284c7',
     cGradStart: '#0284c7',
     cGradEnd: '#38bdf8',
